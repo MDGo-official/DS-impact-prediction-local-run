@@ -1,0 +1,32 @@
+{
+  "probability_threshold": 0.5,
+  "multi_input_model": "InceptionBlockMultiInput",
+  "peak_shift_right": -74,
+  "len_multi_input_signal": 1150,
+  "move_win_len": 5,
+  "dv_edges": [10, 41],
+  "mechanism": {
+    "cutoff_min":10,
+    "cutoff_max":90,
+    "cutoff_steps":10,
+    "sensors": ["Acc_X", "Acc_Y"],
+    "log_agreement_perc_thr": 0.625
+  },
+  "gyro_columns": ["Gyro_X", "Gyro_Y", "Gyro_Z"],
+  "all_acc_columns": ["Acc_X", "Acc_Y", "Acc_Z"],
+  "acc_columns_model": ["Acc_X", "Acc_Y"],
+  "acc_term": "Acc",
+  "rollover_angles": 80.0,
+  "section_length": 1.0,
+  "sample_rate": 200,
+  "window_time": 0.03,
+  "moving_win_peak_section": true,
+  "xy_thresh_pothole": 7.0,
+  "pothole_indicator": {
+    "peak_len": 25,
+    "peak_shift": -7,
+    "move_win": 5,
+    "moving_type": "avg",
+    "times_bigger": 1.5
+  }
+}

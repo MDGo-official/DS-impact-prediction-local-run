@@ -1,0 +1,35 @@
+{
+    "axes": ["Acc_X","Acc_Y","Acc_Z","Gyro_X","Gyro_Y","Gyro_Z"],
+    "crash_energy": 5,
+
+    "a0_win_size": 100,
+    "acc_noise_tolerance": 0.06,
+    "acc_noise_tolerance_on_norm": 0.12,
+    
+    "orientation_atol": 0.25,
+    "orientation_ws_bias_g": 0.4,
+
+    "lr": 0.1,
+    "momentum": 0.9,
+    "base_lr": 0.00001,
+    "max_lr": 0.01,
+    "num_iter": 500,
+
+    "x_angle_max": 30,
+    "x_angle_min": -20,
+    "y_angle_max": 80,
+    "y_angle_min": 5,
+    
+    "z_angle_min": 160,
+    "z_angle_max": 200,
+    "x_restrictive_min": -15,
+    "x_restrictive_max": 10,
+    "y_restrictive_min": 15,
+    "y_restrictive_max": 65,
+
+    "stability_y": 15,
+    "stability_x": 20,
+    "stability_z": 25,
+    "check_on_t-num": 1,
+    "z_axis_limit": 0.2
+}

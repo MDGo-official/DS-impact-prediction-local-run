@@ -1,0 +1,10 @@
+{
+  "minimal_unique_values": 20,
+  "max_constant_segment_length" : 10,
+  "max_valid_value": 16.5,
+  "minimal_peak_edge_distance": 15,
+  "minimal_edge_peak_height": 2,
+  "acc_columns": ["Acc_X", "Acc_Y", "Acc_Z"],
+  "gyro_columns": ["Gyro_X", "Gyro_Y", "Gyro_Z"],
+  "gyro_max_num_zeros": 20
+}

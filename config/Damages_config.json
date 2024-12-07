@@ -1,0 +1,28 @@
+{
+  "architecture": "Damages_model",
+  "OutFs": 200,
+  "signal_length": 96,
+  "signal_shift": 0.5,
+  "cutoffFreq": 55,
+  "InFs": 200,
+  "deform_threshold": 30,
+  "cells_dict": {
+    "W": ["A", "B", "C","D","E", "F"],
+    "L":  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+    "levels": ["Low", "High"]
+  },
+  "post_process_dict": {
+    "(160, 200)": {"edge":  ["A_2", "F_2"], "mechanisms": ["Frontal"]},
+    "(200, 250)": {"edge":  ["F_2"], "mechanisms": ["Frontal", "SideRight"]},
+    "(250, 290)": {"edge":  [], "mechanisms": ["SideRight"]},
+    "(290,340)": {"edge":  ["F_12"], "mechanisms": ["Rear", "SideRight"]},
+    "(340, 20)": {"edge":  ["A_12", "F_12"],"mechanisms": ["Rear"]},
+    "(20, 70)": {"edge": ["A_12"], "mechanisms": ["Rear", "SideLeft"]},
+    "(70, 110)": {"edge":  [], "mechanisms": ["SideLeft"]},
+    "(110, 160)": {"edge":  ["A_2"], "mechanisms": ["Frontal", "SideLeft"]}
+  },
+  "mechanism_dict": {"Frontal": [1, 2, 3, 4],
+      "Rear": [13, 12, 11, 10, 9],
+      "SideLeft": ["F", "E","D"],
+      "SideRight": ["A", "B", "C"]}
+}

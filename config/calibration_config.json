@@ -1,0 +1,20 @@
+{
+    "axes": ["Acc_X","Acc_Y","Acc_Z","Gyro_X","Gyro_Y","Gyro_Z"],
+    "num_samples_in_register": 170,
+
+    "ax_min_win_size": 70,
+    "ax_gyro_noise_tolerance": 3.1415,
+    "ax_min_threshold": 0.2,
+    "ax_max_threshold": 1.5,
+
+    "min_ax_events": 3,
+    "min_a0_events": 4,
+    "plane_better_threshold": 3,
+    "calibrated_threshold": 0.5,
+
+    "a0x_threshold": 0.078125,
+    "a0y_threshold": 0.1171875,
+    "a0z_threshold": 0.05259375,
+
+    "psi_z_threshold": 10
+}

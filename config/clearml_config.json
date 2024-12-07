@@ -1,0 +1,13 @@
+{
+    "sample_rate": 200,
+    "LowImpactAllocation": ["Sensa", "EventTest"],
+    "HighImpactAllocation": [],
+    "acc_columns": ["Acc_X", "Acc_Y"],
+    "HighImpactMaxG" : 0.0,
+    "LowImpactDv" : 4.5,
+    "dv_duration": 30,
+    "SafetyNet":{
+        "MaxG" : 5.0,
+        "MaxDV" : 6.0
+    }
+}

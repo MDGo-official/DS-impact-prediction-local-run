@@ -1,0 +1,13 @@
+{
+  "architecture": "VS_SM",
+  "architecture_hip": "VS_SM_hip",
+  "OutFs": 200,
+  "signal_length": 100,
+  "cutoffFreq": 50,
+  "InFs": 200,
+  "body_parts_dict": {"Head": "HEAD", "Chest": "CHST", "NeckUp": "NECKUP", "NeckLow": "NECKLO",
+                  "FemurLeft":"FEMRLE", "FemurRight": "FEMRRI", "Pelvis": "PELVUP",
+                  "SpineLow": "LUSP", "Ribs": "RIBSL", "AbdomenFrontal": "ABDOFR", "AbdomenMiddle": "ABDOMI",
+                  "AbdomenRear": "ABDORE"},
+  "sens_dict": {"Acceleration": "_AC", "Displacement": "_DS", "Moment": "_MO", "Force": "_FO"}
+}
