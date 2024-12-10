@@ -2,6 +2,20 @@ import json
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+import os
+import sys
+
+sys.path.append(os.path.abspath(os.path.join(".",os.pardir)))
+sys.path.append(os.path.join(".", 'Packages'))
+sys.path.append(os.path.join(".", 'Architectures'))
+
+from Packages.CrashDetection import CrashDetection, InjuryLevel
+from Packages.VirtualSensors import VS
+from Packages.MedicalCalculation import MedicalFormulationCalculation, FarSideMitigationCalculation
+from Packages.Damages import DamagesPrediction
+from Packages.SignalProcessing import SignalProcessing
+from Packages.AirBagDeploy import airbag_deploy
+
 
 # Load JSON data
 with open(r'Data\63b6ba0afd4390f3bc15c346\63b6ba0bfd4390f3bc15c347.json', 'r') as f:
@@ -47,38 +61,17 @@ gyr_y = (data['Sensors'][1]["Data"])
 gyr_z = (data['Sensors'][2]["Data"])
 rawData_df = pd.DataFrame(np.array([Acc_X,Acc_Y,Acc_Z,gyr_x,gyr_y,gyr_z]).T, columns=["Acc_X","Acc_Y","Acc_Z",'Gyro_X', 'Gyro_Y', 'Gyro_Z'])
 
-
-import json
-import numpy as np
-from matplotlib import pyplot as plt
-import pandas as pd
-
-
-import os
-import sys
-import copy
-sys.path.append(os.path.abspath(os.path.join(".",os.pardir)))
-sys.path.append(os.path.join(".", 'Packages'))
-sys.path.append(os.path.join(".", 'Architectures'))
-
-from Packages.CrashDetection import CrashDetection, InjuryLevel
-from Packages.VirtualSensors import VS
-from Packages.MedicalCalculation import MedicalFormulationCalculation, FarSideMitigationCalculation
-from Packages.Damages import DamagesPrediction
-from Packages.SignalProcessing import SignalProcessing
-from Packages.AirBagDeploy import airbag_deploy
-
-
 # Crash Detection
 # ToDo - SaftyNet
 calibInfo = {
+    #creating unit matrix for aligned signal
     "OperationalMat": np.eye(3),
     "AxesOrientation": "FLU"
 }
-impactData = {}
 offset = [0,0,0]
+impactData = {}
 crashDetectionObj = CrashDetection(".", rawData_df, calibInfo, offset)
-crashDict = crashDetectionObj.run()
+crashDict = crashDetectionObj.run() #running crash detection
 
 isCrash, reason = crashDict.get('isCrash')
 mechanism = crashDict.get("mechanism")
@@ -101,11 +94,12 @@ vs = VS(".", rawData_df, calibInfo, crashDict, offset)
 occpVsDict = vs.run()
 impactData['VirtualSensors'] = occpVsDict
 
+#Todo plot VS
+
 # Air Bag deployment
 ab_deploy = airbag_deploy.AirBagDeploy(".", rawData_df, calibInfo, crashDict, offset)
 ab_deployObj = ab_deploy.run()
 impactData['AirBagDeploy'] = ab_deployObj
-print(impactData['AirBagDeploy'])
 
 # Damages
 damagesObj = DamagesPrediction(".", rawData_df, calibInfo, crashDict, offset)
@@ -114,7 +108,6 @@ damagesResult = damagesObj.run()
 impactData['Final'] = damagesResult.get('final')
 impactData['Added'] = damagesResult.get('added')
 impactData['Removed'] = damagesResult.get('removed')
-print((impactData['Final'],impactData['Added'], impactData['Removed']))
 
 def CalcOccFarSideMitigation(occDict, knownOcc, unknownOcc):
     if occDict is None:
@@ -164,12 +157,6 @@ elif mechanism == "SideRight":
 for occVal in occpDict.values():
     MedicalFormulationCalculation.run_post_processing_summary(occVal["MedicalCriteria"])
 
-
-print(impactData.keys())
-
-
-import os
-import json
 
 # Function to save impactData to JSON files
 def save_impact_data(impactData):
