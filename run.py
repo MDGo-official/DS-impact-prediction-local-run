@@ -18,7 +18,7 @@ from Packages.AirBagDeploy import airbag_deploy
 
 
 # Load JSON data
-with open(r'Data\63b6ba0afd4390f3bc15c346\63b6ba0bfd4390f3bc15c347.json', 'r') as f:
+with open(r"Data\Carsh_Side_Left._606c447f416c5e0002a96c2d.json", 'r') as f:
     data = json.load(f)
 
 # Extract accelerometer data and time
@@ -65,7 +65,9 @@ rawData_df = pd.DataFrame(np.array([Acc_X,Acc_Y,Acc_Z,gyr_x,gyr_y,gyr_z]).T, col
 # ToDo - SaftyNet
 calibInfo = {
     #creating unit matrix for aligned signal
-    "OperationalMat": np.eye(3),
+    "OperationalMat": np.array([[-9.13119776e-01, -2.03933585e-03,  4.07686295e-01],
+       [ 2.21042190e-03, -9.99997556e-01, -5.13897804e-05],
+       [ 4.07685403e-01,  8.54233690e-04,  9.13122052e-01]]),
     "AxesOrientation": "FLU"
 }
 offset = [0,0,0]
