@@ -15,34 +15,15 @@ from Packages.MedicalCalculation import MedicalFormulationCalculation, FarSideMi
 from Packages.Damages import DamagesPrediction
 from Packages.SignalProcessing import SignalProcessing
 from Packages.AirBagDeploy import airbag_deploy
-
-def CalcOccFarSideMitigation(occDict, knownOcc, unknownOcc):
-    if occDict is None:
-        raise ValueError("occDict is not defined.")
-    if knownOcc is None:
-        raise ValueError("knownOcc is not defined.")
-    if unknownOcc is None:
-        raise ValueError("unknownOcc is not defined.")
-
-    try:
-        # get known medical criteria
-        if knownOcc in occDict.keys():
-            medCriteria = occDict[knownOcc].get('MedicalCriteria')
-            # calculate FarSideMitigation for unknown occupant
-            fsmc = FarSideMitigationCalculation(mechanism, int(unknownOcc), medCriteria)
-            farSideDict = fsmc.Run()
-            occDict[unknownOcc] = {'MedicalCriteria': farSideDict}
-        else:
-            raise Exception(f"Occupant {knownOcc} is missing medical criteria.")
-    except Exception as ex:
-        msg = ex.message if hasattr(ex, 'message') else str(ex.args)
-        raise Exception(f"Error while calculating far side mitigation: {msg}")
-    
-folder_name = 'Data/63b6ba0afd4390f3bc15c346/'
-file_name = "63b6ba0bfd4390f3bc15c347.json"
+   
+folder_name = 'Data/'
+# file_name = "63fdf0e17060d1c0a8d93b21.json"
+# file_name = "606c2bf94ff42e0002ce4d71.json"
+# file_name = "606c447f416c5e0002a96c2d.json"
+file_name = "644172bb4c55584206a9d570.json"
 
 # Load JSON data
-with open(r"Data\Carsh_Side_Left._606c447f416c5e0002a96c2d.json", 'r') as f:
+with open(folder_name+file_name, 'r') as f:
     data = json.load(f)
 
 # Extract accelerometer data and time
@@ -59,27 +40,30 @@ gyr_y = (data['Sensors'][1]["Data"])
 gyr_z = (data['Sensors'][2]["Data"])
 rawData_df = pd.DataFrame(np.array([Acc_X,Acc_Y,Acc_Z,gyr_x,gyr_y,gyr_z]).T, columns=["Acc_X","Acc_Y","Acc_Z",'Gyro_X', 'Gyro_Y', 'Gyro_Z'])
 
-# Crash Detection
-# ToDo - SaftyNet
+
 calibInfo = {
-    #creating unit matrix for aligned signal
-    "OperationalMat": np.array([[-9.13119776e-01, -2.03933585e-03,  4.07686295e-01],
-       [ 2.21042190e-03, -9.99997556e-01, -5.13897804e-05],
-       [ 4.07685403e-01,  8.54233690e-04,  9.13122052e-01]]),
+    #creating matrix for aligned signal
+    "OperationalMat": np.eye(3) if file_name == "63fdf0e17060d1c0a8d93b21.json" else np.array([
+        [-9.13119776e-01, -2.03933585e-03,  4.07686295e-01],
+        [ 2.21042190e-03, -9.99997556e-01, -5.13897804e-05],
+        [ 4.07685403e-01,  8.54233690e-04,  9.13122052e-01]
+    ]),
     "AxesOrientation": "FLU"
 }
+
+
 offset = [0,0,0]
 impactData = {}
 
 impactData['rawData'] = rawData_df.to_dict(orient='list')
 
+# Crash Detection
 crashDetectionObj = CrashDetection(".", rawData_df, calibInfo, offset)
 crashDict = crashDetectionObj.run() #running crash detection
 
 isCrash, reason = crashDict.get('isCrash')
 mechanism = crashDict.get("mechanism")
 
-impactData['Mechanism'] = mechanism
 impactData['IsCrash'] = isCrash
 impactData['Dv'] = crashDict.get('DV')
 impactData['MaxG'] = crashDict.get('maxG')
@@ -87,17 +71,14 @@ impactData['MaxG'] = crashDict.get('maxG')
 if isCrash:
     impactData['Confidence'] = crashDict.get('confidence')
     impactData['Theta'] = crashDict.get('theta')
-
-# if mechanism == "Rollover":
-#     listOfInsightData.append(impactData)
-#     eventService.InsertRelatedData(ins_id, impactData)
+    impactData['Mechanism'] = mechanism
+else:
+    impactData['Mechanism'] = "No Crash"
 
 # Virtual Sensors
 vs = VS(".", rawData_df, calibInfo, crashDict, offset)
 occpVsDict = vs.run()
 #impactData['VirtualSensors'] = occpVsDict
-
-#Todo plot VS
 
 # Air Bag deployment
 ab_deploy = airbag_deploy.AirBagDeploy(".", rawData_df, calibInfo, crashDict, offset)
@@ -124,6 +105,30 @@ for occKey, occVS in occpVsDict.items():
     medicalDict = mfc.Run()
     occpDict[occLocation]['MedicalCriteria'] = medicalDict
 
+
+def CalcOccFarSideMitigation(occDict, knownOcc, unknownOcc):
+    if occDict is None:
+        raise ValueError("occDict is not defined.")
+    if knownOcc is None:
+        raise ValueError("knownOcc is not defined.")
+    if unknownOcc is None:
+        raise ValueError("unknownOcc is not defined.")
+
+    try:
+        # get known medical criteria
+        if knownOcc in occDict.keys():
+            medCriteria = occDict[knownOcc].get('MedicalCriteria')
+            # calculate FarSideMitigation for unknown occupant
+            fsmc = FarSideMitigationCalculation(mechanism, int(unknownOcc), medCriteria)
+            farSideDict = fsmc.Run()
+            occDict[unknownOcc] = {'MedicalCriteria': farSideDict}
+        else:
+            raise Exception(f"Occupant {knownOcc} is missing medical criteria.")
+    except Exception as ex:
+        msg = ex.message if hasattr(ex, 'message') else str(ex.args)
+        raise Exception(f"Error while calculating far side mitigation: {msg}")
+
+
 # run FarSideMitigation only for Side crash
 if mechanism == "SideLeft":
     CalcOccFarSideMitigation(occpDict, "1", "2")
@@ -147,26 +152,6 @@ def save_impact_data(impactData):
     # 1. Save the whole impactData dictionary
     with open(os.path.join(output_dir, "impactData_full.json"), "w") as f:
         json.dump(impactData, f, indent=4)
-
-    # # 2. Save damaged data (Final, Added, Removed)
-    # damaged_data = {key: impactData[key] for key in ['Final', 'Added', 'Removed'] if key in impactData}
-    # with open(os.path.join(output_dir, "damaged_data.json"), "w") as f:
-    #     json.dump(damaged_data, f, indent=4)
-
-    # # 3. Save injuries data (Occupants)
-    # injuries_data = {'Occupants': impactData.get('Occupants', {})}
-    # with open(os.path.join(output_dir, "injuries_data.json"), "w") as f:
-    #     json.dump(injuries_data, f, indent=4)
-
-    # # 4. Save VirtualSensors data
-    # virtual_sensors_data = {'VirtualSensors': impactData.get('VirtualSensors', {})}
-    # with open(os.path.join(output_dir, "virtual_sensors_data.json"), "w") as f:
-    #     json.dump(virtual_sensors_data, f, indent=4)
-
-    # # 5. Save Crash data (all other keys)
-    # crash_data = {key: value for key, value in impactData.items() if key not in ['Final', 'Added', 'Removed', 'Occupants', 'VirtualSensors']}
-    # with open(os.path.join(output_dir, "crash_data.json"), "w") as f:
-    #     json.dump(crash_data, f, indent=4)
 
 # Call the function to save data
 save_impact_data(impactData)
