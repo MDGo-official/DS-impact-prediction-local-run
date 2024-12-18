@@ -17,13 +17,18 @@ from Packages.SignalProcessing import SignalProcessing
 from Packages.AirBagDeploy import airbag_deploy
    
 folder_name = 'Data/'
-# file_name = "63fdf0e17060d1c0a8d93b21.json"
-# file_name = "606c2bf94ff42e0002ce4d71.json"
-# file_name = "606c447f416c5e0002a96c2d.json"
-file_name = "644172bb4c55584206a9d570.json"
+
+file_name = "EV63fe8da1467e4bfb172ba3c4.json" # 
+
+# file_name = "EV63fdf0e17060d1c0a8d93b21.json" #
+# file_name = "EV606c2bf94ff42e0002ce4d71.json" #
+# file_name = "EV606c447f416c5e0002a96c2d.json" #
+# file_name = "EV62b813664f0b7ed2b2cc7316.json" #
+# file_name = "EV62e5f7c7214dc35247117289.json" #
+# file_name = "EV635c45180717502673c60545.json" # 
 
 # Load JSON data
-with open(folder_name+file_name, 'r') as f:
+with open(folder_name + file_name, 'r') as f:
     data = json.load(f)
 
 # Extract accelerometer data and time
@@ -42,14 +47,9 @@ rawData_df = pd.DataFrame(np.array([Acc_X,Acc_Y,Acc_Z,gyr_x,gyr_y,gyr_z]).T, col
 
 
 calibInfo = {
-    #creating matrix for aligned signal
-    "OperationalMat": np.eye(3) if file_name == "63fdf0e17060d1c0a8d93b21.json" else np.array([
-        [-9.13119776e-01, -2.03933585e-03,  4.07686295e-01],
-        [ 2.21042190e-03, -9.99997556e-01, -5.13897804e-05],
-        [ 4.07685403e-01,  8.54233690e-04,  9.13122052e-01]
-    ]),
-    "AxesOrientation": "FLU"
-}
+    #creating unit matrix for aligned signal
+    "OperationalMat": np.eye(3),
+    "AxesOrientation": "FLU" }
 
 
 offset = [0,0,0]
